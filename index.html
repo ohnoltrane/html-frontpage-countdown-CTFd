@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Event Frontpage</title>
+      <style>
+         /* Countdown Container */
+          .countdown {
+              display: flex;
+              gap: 15px;
+              text-align: center;
+              flex-wrap: wrap; /* Adjust layout for smaller screens */
+              justify-content: center;
+              align-items: center;
+          }
+
+          /* Countdown Boxes */
+          .countdown div {
+              font-size: 2rem; /* Flexible size for responsiveness */
+              font-weight: bold;
+              padding: 15px 20px;
+              border-radius: 10px;
+              background: linear-gradient(135deg, #3498db, #8e44ad); /* Vibrant gradient */
+              color: #fff; /* White text */
+              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+              flex: 1; /* Flexible sizing */
+              min-width: 90px; /* Ensure a minimum size */
+              max-width: 150px; /* Prevent overflow on larger screens */
+          }
+
+          /* Countdown Labels */
+          .countdown div span {
+              display: block;
+              font-size: 0.9rem; /* Smaller label size */
+              font-weight: normal;
+              margin-top: 5px;
+              opacity: 0.8; /* Slightly dimmed labels */
+          }
+
+          /* Media Queries for Small Devices */
+          @media (max-width: 700px) {
+              .countdown {
+                  display: flex; /* Ensure flexbox is applied */
+                  gap: 5px; /* Reduced gap between boxes */
+                  justify-content: center; /* Center the boxes, if needed */
+                  align-items: center; /* Vertically center the text */
+              }
+
+              .countdown div {
+                  flex: 0 0 auto; /* Allow boxes to shrink and expand */
+                  font-size: 1.2rem; /* Smaller font for small screens */
+                  padding: 8px 10px; /* Compact padding */
+                  min-width: 80px; /* Ensure a minimum width */
+                  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+              }
+          }
+      </style>
+  </head>
+  <body>
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <a href="eventwebsite.com" target="_blank">
+            <img class="w-100 mx-auto d-block" style="max-width: 100%;padding-top: 14vh;" src="/files/logos/Logo.png"/>
+          </a>
+          	<br>  
+          <!-- Countdown Timer -->
+            <div id="timer" class="countdown text-center">
+                <div id="days">00<span>Days</span></div>
+                <div id="hours">00<span>Hours</span></div>
+                <div id="minutes">00<span>Minutes</span></div>
+                <div id="seconds">00<span>Seconds</span></div>
+            </div>
+         <br>
+          <h3><p><strong>Event</strong></p></h3>     
+          <br>
+            <h4 class="text-left">
+                <p>{ctf_description}</p>
+            </h4>
+            <br>
+          <br>
+        </div>
+    </div>
+  </body>
+  <script>
+
+            // Function to update the logo based on the theme
+            function updateLogoBasedOnTheme() {
+                const logo = document.querySelector('img[src="/files/logos/lightmode.png"], img[src="/files/logos/darkmode.png"]');
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+
+                if (currentTheme === 'dark') {
+                    logo.src = '/files/logos/darkmode.png'; // Replace with the dark theme logo
+                } else {
+                    logo.src = '/files/logos/lightmode.png'; // Default to the light theme logo
+                }
+            }
+
+            // Observe changes to the theme attribute
+            const observer = new MutationObserver(() => {
+                updateLogoBasedOnTheme();
+            });
+
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+
+            // Initial call to set the correct logo
+            updateLogoBasedOnTheme();
+    
+            // Define target dates
+            const startDate = new Date("{{ctf_start}}").getTime();
+            const endTime = new Date("{{ctf_end}}").getTime(); // Changed from endDate to endTime
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+
+                if (now < startDate) {
+                    // Countdown to competition start
+                    const timeLeft = startDate - now;
+
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                    document.getElementById("days").innerHTML = `${days}<span>Days</span>`;
+                    document.getElementById("hours").innerHTML = `${hours}<span>Hours</span>`;
+                    document.getElementById("minutes").innerHTML = `${minutes}<span>Minutes</span>`;
+                    document.getElementById("seconds").innerHTML = `${seconds}<span>Seconds</span>`;
+                } else if (now >= startDate && now < endTime) {
+                    // Countdown to competition end
+                    const timeLeft = endTime - now;
+
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                    document.getElementById("days").innerHTML = `${days}<span>Days</span>`;
+                    document.getElementById("hours").innerHTML = `${hours}<span>Hours</span>`;
+                    document.getElementById("minutes").innerHTML = `${minutes}<span>Minutes</span>`;
+                    document.getElementById("seconds").innerHTML = `${seconds}<span>Seconds</span>`;
+                } else {
+                    // Competition has ended
+                    document.getElementById("timer").innerHTML = "Competition has ended!";
+                }
+            }
+
+            // Update countdown every second
+            setInterval(updateCountdown, 1000);
+            updateCountdown(); // Initial call to avoid delay
+    </script>
+</html>
